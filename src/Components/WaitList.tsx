@@ -1,9 +1,10 @@
-'use client'
-
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { glitchAnimation, glitchTransition } from "../../utils/glitchEffect";
 import FeatureShowcase from "./Featureshowcase";
+import SecretPasscode from "./SecretPasscode";
+import AnimatedBackground from "./AnimatedBackground";
+import IlluminatiEye from "./Illuminati";
 
 const WaitlistPage = () => {
   const [email, setEmail] = useState("");
@@ -12,19 +13,33 @@ const WaitlistPage = () => {
   const [countdown, setCountdown] = useState(259200); // 3 days in seconds
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [showFeatures, setShowFeatures] = useState(false);
-
+  const [passcodeComplete, setPasscodeComplete] = useState(false);
+  const [chatMessages, setChatMessages] = useState<string[]>([]);
+  const [activeAgents, setActiveAgents] = useState(1337);
+  // console.log(object)
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prevCountdown) => (prevCountdown > 0 ? prevCountdown - 1 : 0));
     }, 1000);
 
-    return () => clearInterval(timer);
+    const agentTimer = setInterval(() => {
+      setActiveAgents((prevAgents) => prevAgents + Math.floor(Math.random() * 5));
+    }, 5000);
+
+    return () => {
+      clearInterval(timer);
+      clearInterval(agentTimer);
+    };
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Add your API call here to save the email and secret code
     setIsSubmitted(true);
+    setChatMessages([...chatMessages, "Infiltration request received. Processing..."]);
+    setTimeout(() => {
+      setChatMessages([...chatMessages, "Infiltration request received. Processing...", "Access granted. Welcome to the Order of Enigma."]);
+    }, 2000);
   };
 
   const formatTime = (time: number) => {
@@ -37,13 +52,11 @@ const WaitlistPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-black p-4 text-purple-400 overflow-hidden">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 4, repeat: Infinity }}
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900 to-transparent opacity-20"
-      />
-      <div className="text-center max-w-2xl relative z-10" style={{fontFamily: "VT323, monospace"}}>
+      <AnimatedBackground />
+      <div className="text-center max-w-2xl relative z-10" style={{ fontFamily: "VT323, monospace" }}>
+        <motion.div className="flex justify-center items-center mb-4">
+          <IlluminatiEye />
+        </motion.div>
         <motion.h1
           className="text-7xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600"
           animate={{ scale: [1, 1.05, 1] }}
@@ -51,6 +64,24 @@ const WaitlistPage = () => {
         >
           Enigma Connect
         </motion.h1>
+
+        <motion.div
+          className="mt-8 p-4 bg-gray-900 rounded-md border border-purple-500"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+        >
+          <h3 className="text-xl font-bold mb-2 text-purple-400">Order Statistics</h3>
+          <motion.p
+            className="text-gray-300"
+            animate={{ opacity: [1, 0.5, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            Active Initiates: {activeAgents}
+          </motion.p>
+          <p className="text-gray-300">Successful Rituals: 42,069</p>
+          <p className="text-gray-300">Enlightenment Rate: 98.7%</p>
+        </motion.div>
         <motion.p
           className="text-2xl mb-6"
           variants={glitchAnimation}
@@ -58,7 +89,7 @@ const WaitlistPage = () => {
           animate="visible"
           transition={glitchTransition}
         >
-          The future of secret campus connections
+          The Order of Secret Campus Connections
         </motion.p>
         <p className="text-lg mb-4 text-gray-300">
           Infiltrate our exclusive network before the portal closes
@@ -71,15 +102,34 @@ const WaitlistPage = () => {
           {formatTime(countdown)}
         </motion.div>
 
+        {!isSubmitted && <SecretPasscode onComplete={
+
+          (code) => {
+            console.log(code);
+            setPasscodeComplete(true)
+          }} />}
+
         {isSubmitted ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="bg-purple-900 text-purple-200 p-6 rounded-md shadow-lg"
+            className="bg-gray-900 text-purple-200 p-6 rounded-md shadow-lg border border-purple-500"
           >
             <h2 className="text-2xl font-bold mb-2">Infiltration Successful</h2>
-            <p>Prepare for covert communication. Your secret key will arrive shortly.</p>
+            <div className="mt-4 text-left">
+              {chatMessages.map((message, index) => (
+                <motion.p
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.5 }}
+                  className="mb-2"
+                >
+                  &gt; {message}
+                </motion.p>
+              ))}
+            </div>
           </motion.div>
         ) : (
           <motion.form
@@ -113,16 +163,16 @@ const WaitlistPage = () => {
                 required
                 className="form-checkbox text-pink-500"
               />
-              <span>I swear to uphold the secrecy of this network</span>
+              <span>I swear to uphold the secrecy of the Order</span>
             </label>
             <motion.button
               type="submit"
               className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-md w-full max-w-md hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              disabled={!agreeTerms}
+              disabled={!agreeTerms || !passcodeComplete}
             >
-              Infiltrate the Network
+              Infiltrate the Order
             </motion.button>
           </motion.form>
         )}
@@ -133,7 +183,7 @@ const WaitlistPage = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          {showFeatures ? "Hide" : "Reveal"} Top Secret Features
+          {showFeatures ? "Conceal" : "Reveal"} the Sacred Knowledge
         </motion.button>
 
         <AnimatePresence>
@@ -148,6 +198,7 @@ const WaitlistPage = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
       </div>
       <motion.div
         className="absolute bottom-4 left-4 text-xs text-gray-500"
@@ -155,7 +206,7 @@ const WaitlistPage = () => {
         animate={{ opacity: 0.5 }}
         transition={{ delay: 2 }}
       >
-        System: [CLASSIFIED]
+        Novus Ordo Seclorum | TOR Node: Active | Encryption: Quantum
       </motion.div>
     </div>
   );
