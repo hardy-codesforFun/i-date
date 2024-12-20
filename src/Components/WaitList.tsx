@@ -8,7 +8,6 @@ import IlluminatiEye from "./Illuminati";
 
 const WaitlistPage = () => {
   const [email, setEmail] = useState("");
-  const [secretCode, setSecretCode] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [countdown, setCountdown] = useState(259200); // 3 days in seconds
   const [agreeTerms, setAgreeTerms] = useState(false);
@@ -16,7 +15,7 @@ const WaitlistPage = () => {
   const [passcodeComplete, setPasscodeComplete] = useState(false);
   const [chatMessages, setChatMessages] = useState<string[]>([]);
   const [activeAgents, setActiveAgents] = useState(1337);
-  // console.log(object)
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prevCountdown) => (prevCountdown > 0 ? prevCountdown - 1 : 0));
@@ -34,7 +33,7 @@ const WaitlistPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your API call here to save the email and secret code
+    // Add your API call here to save the email
     setIsSubmitted(true);
     setChatMessages([...chatMessages, "Infiltration request received. Processing..."]);
     setTimeout(() => {
@@ -147,14 +146,6 @@ const WaitlistPage = () => {
               required
               className="px-4 py-3 border border-purple-500 bg-gray-900 rounded-md w-full max-w-md text-purple-400 placeholder-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
-            <input
-              type="text"
-              value={secretCode}
-              onChange={(e) => setSecretCode(e.target.value)}
-              placeholder="Enter the secret code"
-              required
-              className="px-4 py-3 border border-purple-500 bg-gray-900 rounded-md w-full max-w-md text-purple-400 placeholder-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
             <label className="flex items-center space-x-2 text-sm text-gray-300">
               <input
                 type="checkbox"
@@ -213,4 +204,3 @@ const WaitlistPage = () => {
 };
 
 export default WaitlistPage;
-
